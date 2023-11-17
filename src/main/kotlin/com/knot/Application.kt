@@ -1,5 +1,6 @@
 package com.knot
 
+import com.knot.database.DatabaseFactory
 import com.knot.plugins.configureAuthentication
 import com.knot.plugins.configureContentNegotiation
 import com.knot.plugins.configureRouting
@@ -13,6 +14,7 @@ fun main() {
 }
 
 fun Application.module() {
+    DatabaseFactory.init()
     configureContentNegotiation()
     configureAuthentication()
     configureRouting()
