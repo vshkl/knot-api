@@ -11,5 +11,6 @@ fun main() {
 }
 
 fun Application.module() {
+    configureContentNegotiation()
     configureRouting()
 }
