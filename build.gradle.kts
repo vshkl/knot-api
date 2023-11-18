@@ -32,6 +32,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")
     implementation("io.ktor:ktor-server-auth:$ktor_version")
+    implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
     /* Serialization */
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
     /* Database */
