@@ -17,7 +17,12 @@ class JwtService {
     private val jwtSecret = dotenv["JWT_SECRET"]
     private val algorithm = Algorithm.HMAC512(jwtSecret)
 
-    private val verifier: JWTVerifier = JWT
+    /**
+     * A JWT verifier for verifying the authenticity of JSON Web Tokens.
+     *
+     * @property verifier The JWTVerifier instance responsible for verifying JWTs.
+     */
+    val verifier: JWTVerifier = JWT
         .require(algorithm)
         .withIssuer(issuer)
         .build()

@@ -1,10 +1,28 @@
 package com.knot.plugins
 
+import com.knot.auth.JwtService
+import com.knot.repository.UsersRepository
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 
-fun Application.configureAuthentication() {
+private const val JWT_NAME = "jwt"
+private const val JWT_REALM = "knot-server"
+
+fun Application.configureAuthentication(
+    usersRepository: UsersRepository,
+    jwtService: JwtService,
+) {
     install(Authentication) {
-        // TODO: Configure exact authentication – JWT & Bearer token
+        jwt(JWT_NAME) {
+            verifier(jwtService.verifier)
+            realm = JWT_REALM
+            validate { jwtCredential ->
+                val payload = jwtCredential.payload
+                val claim = payload.getClaim("id")
+                val claimStr = claim.asLong()
+                return@validate usersRepository.findUser(claimStr)
+            }
+        }
     }
 }

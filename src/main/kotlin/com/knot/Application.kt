@@ -1,9 +1,11 @@
 package com.knot
 
+import com.knot.auth.JwtService
 import com.knot.database.DatabaseFactory
 import com.knot.plugins.configureAuthentication
 import com.knot.plugins.configureContentNegotiation
 import com.knot.plugins.configureRouting
+import com.knot.repository.UsersRepositoryImpl
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -16,6 +18,9 @@ fun main() {
 fun Application.module() {
     DatabaseFactory.init()
     configureContentNegotiation()
-    configureAuthentication()
+    configureAuthentication(
+        usersRepository = UsersRepositoryImpl(),
+        jwtService = JwtService(),
+    )
     configureRouting()
 }
