@@ -12,7 +12,7 @@ import java.io.Serializable
  * @param passwordHash The password hash of the user.
  */
 data class User(
-    val id: Int,
+    val id: Long,
     val email: String,
     val displayName: String,
     val passwordHash: String,
