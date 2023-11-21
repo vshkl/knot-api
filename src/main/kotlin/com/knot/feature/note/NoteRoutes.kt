@@ -53,8 +53,7 @@ fun Route.noteRoutes(
                 call.respond(HttpStatusCode.BadRequest, "Failed to create note")
             }
         }
-        patch<NoteResource> {
-            val user: User? = call.principal<User>()
+        patch<NoteResource.Id> { noteWithId ->
             lateinit var updateNoteInDto: UpdateNoteInDto
 
             try {
@@ -65,15 +64,15 @@ fun Route.noteRoutes(
             }
 
             try {
-                user?.id?.let { userId ->
-                    notesRepository.updateNote(
-                        id = updateNoteInDto.id,
-                        title = updateNoteInDto.title,
-                        content = updateNoteInDto.content,
-                    )
-                }?.run {
+                val updated = notesRepository.updateNote(
+                    id = noteWithId.id,
+                    title = updateNoteInDto.title,
+                    content = updateNoteInDto.content,
+                )
+
+                if (updated) {
                     call.respond(HttpStatusCode.OK)
-                } ?: run {
+                } else {
                     application.log.error("Failed to update note")
                     call.respond(HttpStatusCode.BadRequest, "Failed to update note")
                 }
