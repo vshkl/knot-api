@@ -1,4 +1,4 @@
-package com.knot.models
+package com.knot.feature.note
 
 /**
  * Represents a note that belongs to a user.

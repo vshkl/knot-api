@@ -1,7 +1,6 @@
-package com.knot.repository
+package com.knot.feature.user
 
 import com.knot.database.DatabaseFactory.dbQuery
-import com.knot.models.User
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -17,10 +16,10 @@ class UsersRepositoryImpl : UsersRepository {
         var statement: InsertStatement<Number>? = null
 
         dbQuery {
-            statement = Users.insert { user ->
-                user[Users.email] = email
-                user[Users.displayName] = displayName
-                user[Users.passwordHash] = passwordHash
+            statement = UserEntity.insert { user ->
+                user[UserEntity.email] = email
+                user[UserEntity.displayName] = displayName
+                user[UserEntity.passwordHash] = passwordHash
             }
         }
 
@@ -31,8 +30,8 @@ class UsersRepositoryImpl : UsersRepository {
 
     override suspend fun findUser(id: Long): User? {
         return dbQuery {
-            Users
-                .select { Users.id.eq(id) }
+            UserEntity
+                .select { UserEntity.id.eq(id) }
                 .map(ResultRow::asUser)
                 .singleOrNull()
         }
@@ -40,8 +39,8 @@ class UsersRepositoryImpl : UsersRepository {
 
     override suspend fun findUser(email: String): User? {
         return dbQuery {
-            Users
-                .select { Users.email.eq(email) }
+            UserEntity
+                .select { UserEntity.email.eq(email) }
                 .map(ResultRow::asUser)
                 .singleOrNull()
         }
@@ -55,9 +54,9 @@ class UsersRepositoryImpl : UsersRepository {
  */
 internal fun ResultRow.asUser(): User {
     return User(
-        id = this[Users.id].value,
-        email = this[Users.email],
-        displayName = this[Users.displayName],
-        passwordHash = this[Users.passwordHash],
+        id = this[UserEntity.id].value,
+        email = this[UserEntity.email],
+        displayName = this[UserEntity.displayName],
+        passwordHash = this[UserEntity.passwordHash],
     )
 }

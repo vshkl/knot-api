@@ -1,9 +1,9 @@
-package com.knot.repository
+package com.knot.feature.user
 
-import com.knot.repository.Users.displayName
-import com.knot.repository.Users.email
-import com.knot.repository.Users.id
-import com.knot.repository.Users.passwordHash
+import com.knot.feature.user.UserEntity.displayName
+import com.knot.feature.user.UserEntity.email
+import com.knot.feature.user.UserEntity.id
+import com.knot.feature.user.UserEntity.passwordHash
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 /**
@@ -15,9 +15,12 @@ import org.jetbrains.exposed.dao.id.LongIdTable
  * @property passwordHash The column representing the hashed password.
  */
 @Suppress("MemberVisibilityCanBePrivate")
-object Users : LongIdTable() {
+object UserEntity : LongIdTable() {
     val email = varchar("email", 128)
         .uniqueIndex()
     val displayName = varchar("display_name", 256)
     val passwordHash = varchar("password_hash", 64)
+
+    override val tableName: String
+        get() = "Users"
 }

@@ -1,4 +1,4 @@
-package com.knot.models
+package com.knot.feature.user
 
 import io.ktor.server.auth.*
 import java.io.Serializable

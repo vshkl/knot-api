@@ -1,9 +1,9 @@
-package com.knot.auth
+package com.knot.feature.auth
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
-import com.knot.models.User
+import com.knot.feature.user.User
 import io.github.cdimascio.dotenv.dotenv
 import java.time.LocalDateTime
 import java.time.ZoneId

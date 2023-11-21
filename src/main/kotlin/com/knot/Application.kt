@@ -1,14 +1,13 @@
 package com.knot
 
-import com.knot.auth.JwtService
-import com.knot.auth.hash
 import com.knot.database.DatabaseFactory
+import com.knot.feature.auth.JwtService
+import com.knot.feature.auth.PasswordHasher
+import com.knot.feature.user.UsersRepositoryImpl
 import com.knot.plugins.configureAuthentication
 import com.knot.plugins.configureContentNegotiation
 import com.knot.plugins.configureResources
 import com.knot.plugins.configureRouting
-import com.knot.repository.UsersRepository
-import com.knot.repository.UsersRepositoryImpl
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -32,6 +31,6 @@ fun Application.module() {
     configureRouting(
         usersRepository = usersRepository,
         jwtService = jwtService,
-        hashFunction = ::hash,
+        hashFunction = PasswordHasher::hash,
     )
 }

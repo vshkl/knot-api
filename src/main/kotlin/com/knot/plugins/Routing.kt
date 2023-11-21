@@ -1,12 +1,12 @@
 package com.knot.plugins
 
-import com.knot.auth.JwtService
-import com.knot.dtos.AccessTokenDto
-import com.knot.dtos.SignInDto
-import com.knot.dtos.SignUpDto
-import com.knot.models.User
-import com.knot.repository.UsersRepository
-import com.knot.resources.Auth
+import com.knot.feature.auth.JwtService
+import com.knot.feature.auth.AccessTokenDto
+import com.knot.feature.auth.SignInDto
+import com.knot.feature.auth.SignUpDto
+import com.knot.feature.user.User
+import com.knot.feature.user.UsersRepository
+import com.knot.feature.auth.AuthResource
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -24,7 +24,7 @@ fun Application.configureRouting(
             call.respondText("Hello World!")
         }
         // Auth
-        post<Auth.SignUp> {
+        post<AuthResource.SignUp> {
             lateinit var signUpDto: SignUpDto
 
             try {
@@ -61,7 +61,7 @@ fun Application.configureRouting(
                 call.respond(HttpStatusCode.BadRequest, "Failed to create user")
             }
         }
-        post<Auth.SignIn> {
+        post<AuthResource.SignIn> {
             lateinit var signInDto: SignInDto
 
             try {

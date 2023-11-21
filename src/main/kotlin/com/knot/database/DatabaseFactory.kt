@@ -1,7 +1,7 @@
 package com.knot.database
 
-import com.knot.repository.Notes
-import com.knot.repository.Users
+import com.knot.feature.note.NoteEntity
+import com.knot.feature.user.UserEntity
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.github.cdimascio.dotenv.dotenv
@@ -25,8 +25,8 @@ object DatabaseFactory {
         Database.connect(composeHikariDataSource())
 
         transaction {
-            SchemaUtils.create(Users)
-            SchemaUtils.create(Notes)
+            SchemaUtils.create(UserEntity)
+            SchemaUtils.create(NoteEntity)
         }
     }
 

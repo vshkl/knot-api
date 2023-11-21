@@ -1,7 +1,7 @@
 package com.knot.plugins
 
-import com.knot.auth.JwtService
-import com.knot.repository.UsersRepository
+import com.knot.feature.auth.JwtService
+import com.knot.feature.user.UsersRepository
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
