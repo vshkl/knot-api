@@ -7,11 +7,13 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 class NotesRepositoryImpl : NotesRepository {
 
     override suspend fun createNote(
+        userId: Long,
         title: String,
         content: String,
     ): Note? = dbQuery {
         NoteEntity
             .insert { note ->
+                note[NoteEntity.userId] = userId
                 note[NoteEntity.title] = title
                 note[NoteEntity.content] = content
             }

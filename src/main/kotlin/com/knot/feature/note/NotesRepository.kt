@@ -6,13 +6,15 @@ package com.knot.feature.note
 interface NotesRepository {
 
     /**
-     * Creates a new note with the given title and content.
+     * Creates a new note for the given user.
      *
+     * @param userId The ID of the user for whom the note is being created.
      * @param title The title of the note.
      * @param content The content of the note.
      * @return The created Note object if successful, null otherwise.
      */
     suspend fun createNote(
+        userId: Long,
         title: String,
         content: String,
     ): Note?
