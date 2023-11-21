@@ -2,6 +2,7 @@ package com.knot.plugins
 
 import com.knot.auth.JwtService
 import com.knot.dtos.AccessTokenDto
+import com.knot.dtos.SignInDto
 import com.knot.dtos.SignUpDto
 import com.knot.models.User
 import com.knot.repository.UsersRepository
@@ -33,10 +34,7 @@ fun Application.configureRouting(
                 call.respond(HttpStatusCode.BadRequest, "Incomplete data")
             }
 
-            if (signUpDto.email.isBlank() ||
-                signUpDto.displayName.isBlank() ||
-                signUpDto.password.isBlank()
-            ) {
+            if (signUpDto.email.isBlank() || signUpDto.displayName.isBlank() || signUpDto.password.isBlank()) {
                 call.respond(HttpStatusCode.BadRequest, "Incomplete data")
             }
 
@@ -51,10 +49,8 @@ fun Application.configureRouting(
                     passwordHash = hashFunction.invoke(signUpDto.password),
                 )
 
-                newUser?.let {
-                    val accessTokenDto = AccessTokenDto(
-                        token = jwtService.generateToken(newUser),
-                    )
+                newUser?.run {
+                    val accessTokenDto = AccessTokenDto(token = jwtService.generateToken(newUser))
                     call.respond(HttpStatusCode.Created, accessTokenDto)
                 } ?: run {
                     application.log.error("Failed to create user")
@@ -66,7 +62,33 @@ fun Application.configureRouting(
             }
         }
         post<Auth.SignIn> {
+            lateinit var signInDto: SignInDto
 
+            try {
+                signInDto = call.receive<SignInDto>()
+            } catch (e: ContentTransformationException) {
+                application.log.error("Failed to process request", e)
+                call.respond(HttpStatusCode.BadRequest, "Incomplete data")
+            }
+
+            if (signInDto.email.isBlank() || signInDto.password.isBlank()) {
+                call.respond(HttpStatusCode.BadRequest, "Incomplete data")
+            }
+
+            val passwordHash = hashFunction(signInDto.password)
+            try {
+                val user: User? = usersRepository.findUser(signInDto.email)
+                if (passwordHash == user?.passwordHash) {
+                    val accessTokenDto = AccessTokenDto(token = jwtService.generateToken(user))
+                    call.respond(accessTokenDto)
+                } else {
+                    application.log.error("Failed to create user")
+                    call.respond(HttpStatusCode.Unauthorized)
+                }
+            } catch (e: Throwable) {
+                application.log.error("Failed to create user", e)
+                call.respond(HttpStatusCode.BadRequest, "Failed to sign in")
+            }
         }
     }
 }
