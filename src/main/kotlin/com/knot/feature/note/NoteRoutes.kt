@@ -6,6 +6,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
+import io.ktor.server.resources.*
 import io.ktor.server.resources.patch
 import io.ktor.server.resources.post
 import io.ktor.server.response.*
@@ -79,6 +80,21 @@ fun Route.noteRoutes(
             } catch (e: Throwable) {
                 application.log.error("Failed to update note", e)
                 call.respond(HttpStatusCode.BadRequest, "Failed to update note")
+            }
+        }
+        delete<NoteResource.Id> { noteWithId ->
+            try {
+                val deleted = notesRepository.deleteNote(id = noteWithId.id)
+
+                if (deleted) {
+                    call.respond(HttpStatusCode.OK)
+                } else {
+                    application.log.error("Failed to delete note")
+                    call.respond(HttpStatusCode.BadRequest, "Failed to delete note")
+                }
+            } catch (e: Throwable) {
+                application.log.error("Failed to delete note", e)
+                call.respond(HttpStatusCode.BadRequest, "Failed to delete note")
             }
         }
     }
