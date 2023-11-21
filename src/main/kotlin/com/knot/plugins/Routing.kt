@@ -3,6 +3,7 @@ package com.knot.plugins
 import com.knot.feature.auth.JwtService
 import com.knot.feature.auth.authRoutes
 import com.knot.feature.user.UsersRepository
+import com.knot.feature.user.userRoute
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 
@@ -13,5 +14,6 @@ fun Application.configureRouting(
 ) {
     routing {
         authRoutes(usersRepository, jwtService, hashFunction)
+        userRoute(usersRepository, jwtService, hashFunction)
     }
 }
