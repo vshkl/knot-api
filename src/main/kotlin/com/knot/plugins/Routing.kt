@@ -14,6 +14,6 @@ fun Application.configureRouting(
 ) {
     routing {
         authRoutes(usersRepository, jwtService, hashFunction)
-        userRoute(usersRepository, jwtService, hashFunction)
+        userRoute()
     }
 }
