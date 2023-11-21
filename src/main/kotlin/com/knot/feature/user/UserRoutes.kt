@@ -1,6 +1,7 @@
 package com.knot.feature.user
 
 import com.knot.feature.auth.JwtService
+import com.knot.plugins.JWT_NAME
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -13,7 +14,7 @@ fun Route.userRoute(
     jwtService: JwtService,
     hashFunction: (String) -> String,
 ) {
-    authenticate("jwt") {
+    authenticate(JWT_NAME) {
         get<UserResource> {
             val user: User? = call.principal<User>()
 

@@ -6,7 +6,7 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 
-private const val JWT_NAME = "jwt"
+const val JWT_NAME = "jwt"
 private const val JWT_REALM = "knot-server"
 
 fun Application.configureAuthentication(
