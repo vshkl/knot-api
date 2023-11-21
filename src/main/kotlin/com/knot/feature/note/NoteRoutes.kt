@@ -16,20 +16,20 @@ fun Route.noteRoutes(
     authenticate(JWT_NAME) {
         post<NoteResource> {
             val user: User? = call.principal<User>()
-            lateinit var newNoteInDto: NewNoteInDto
+            lateinit var createNoteInDto: CreateNoteInDto
 
             try {
-                newNoteInDto = call.receive<NewNoteInDto>()
+                createNoteInDto = call.receive<CreateNoteInDto>()
             } catch (e: ContentTransformationException) {
                 application.log.error("Failed to process request", e)
                 call.respond(HttpStatusCode.BadRequest, "Incomplete data")
             }
 
-            if (newNoteInDto.title.isBlank()) {
+            if (createNoteInDto.title.isBlank()) {
                 call.respond(HttpStatusCode.BadRequest, "Note should have title")
             }
 
-            if (newNoteInDto.content.isBlank()) {
+            if (createNoteInDto.content.isBlank()) {
                 call.respond(HttpStatusCode.BadRequest, "Note should have content")
             }
 
@@ -37,8 +37,8 @@ fun Route.noteRoutes(
                 user?.id?.let { userId ->
                     notesRepository.createNote(
                         userId = userId,
-                        title = newNoteInDto.title,
-                        content = newNoteInDto.content,
+                        title = createNoteInDto.title,
+                        content = createNoteInDto.content,
                     )
                 }?.run {
                     val noteOutDto = NoteOutDto(id = id, title = title, content = content)
