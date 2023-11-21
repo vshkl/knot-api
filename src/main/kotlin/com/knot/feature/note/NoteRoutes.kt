@@ -97,5 +97,24 @@ fun Route.noteRoutes(
                 call.respond(HttpStatusCode.BadRequest, "Failed to delete note")
             }
         }
+        get<NoteResource.Id> { noteWithId ->
+            try {
+                val note: Note? = notesRepository.findNote(id = noteWithId.id)
+
+                if (note != null) {
+                    val noteOutDto = NoteOutDto(
+                        id = note.id,
+                        title = note.title,
+                        content = note.content,
+                    )
+                    call.respond(noteOutDto)
+                }
+
+                call.respond(HttpStatusCode.NotFound)
+            } catch (e: Throwable) {
+                application.log.error("Failed to find note", e)
+                call.respond(HttpStatusCode.BadRequest, "Failed to find note")
+            }
+        }
     }
 }
