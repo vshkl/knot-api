@@ -33,6 +33,7 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")
     implementation("io.ktor:ktor-server-auth:$ktor_version")
     implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
+    implementation("io.ktor:ktor-server-resources:$ktor_version")
     /* Serialization */
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
     /* Database */
@@ -48,4 +49,6 @@ dependencies {
     /* Testing */
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.6")
+    testImplementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
 }

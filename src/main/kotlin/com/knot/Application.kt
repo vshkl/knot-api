@@ -1,10 +1,13 @@
 package com.knot
 
 import com.knot.auth.JwtService
+import com.knot.auth.hash
 import com.knot.database.DatabaseFactory
 import com.knot.plugins.configureAuthentication
 import com.knot.plugins.configureContentNegotiation
+import com.knot.plugins.configureResources
 import com.knot.plugins.configureRouting
+import com.knot.repository.UsersRepository
 import com.knot.repository.UsersRepositoryImpl
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -16,11 +19,19 @@ fun main() {
 }
 
 fun Application.module() {
+    val usersRepository = UsersRepositoryImpl()
+    val jwtService = JwtService()
+
     DatabaseFactory.init()
     configureContentNegotiation()
     configureAuthentication(
-        usersRepository = UsersRepositoryImpl(),
-        jwtService = JwtService(),
+        usersRepository = usersRepository,
+        jwtService = jwtService,
     )
-    configureRouting()
+    configureResources()
+    configureRouting(
+        usersRepository = usersRepository,
+        jwtService = jwtService,
+        hashFunction = ::hash,
+    )
 }
