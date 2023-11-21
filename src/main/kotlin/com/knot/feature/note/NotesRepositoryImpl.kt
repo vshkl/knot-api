@@ -47,6 +47,41 @@ class NotesRepositoryImpl : NotesRepository {
             ?.asNote()
     }
 
+    override suspend fun readNotes(
+        limit: Int,
+        before: Long?,
+        after: Long?,
+        including: Boolean,
+    ): List<Note> = dbQuery {
+        when {
+            before != null && after == null -> {
+                when (including) {
+                    true -> NoteEntity.select { NoteEntity.id lessEq before }
+                    false -> NoteEntity.select { NoteEntity.id less before }
+                }
+                    .orderBy(NoteEntity.id, SortOrder.DESC)
+                    .limit(limit)
+                    .reversed()
+            }
+
+            before == null && after != null -> {
+                when (including) {
+                    true -> NoteEntity.select { NoteEntity.id greaterEq after }
+                    false -> NoteEntity.select { NoteEntity.id greater after }
+                }
+            }
+
+            else -> {
+                NoteEntity.selectAll()
+            }
+        }
+            .windowed(size = limit, step = limit, partialWindows = true) { window ->
+                window.map(ResultRow::asNote)
+            }
+            .firstOrNull()
+            .orEmpty()
+    }
+
     override suspend fun deleteNote(id: Long) = dbQuery {
         NoteEntity
             .deleteWhere { NoteEntity.id eq id }

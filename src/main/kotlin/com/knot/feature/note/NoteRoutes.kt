@@ -54,6 +54,27 @@ fun Route.noteRoutes(
                 call.respond(HttpStatusCode.BadRequest, "Failed to create note")
             }
         }
+        get<NoteResource> { notesQuery ->
+            try {
+                val noteOutDtoList: List<NoteOutDto> = notesRepository.readNotes(
+                    limit = notesQuery.limit,
+                    before = notesQuery.before,
+                    after = notesQuery.after,
+                    including = notesQuery.including,
+                ).map { note ->
+                    NoteOutDto(
+                        id = note.id,
+                        title = note.title,
+                        content = note.content,
+                    )
+                }
+                val notesOutDto = NotesOutDto(results = noteOutDtoList)
+                call.respond(notesOutDto)
+            } catch (e: Throwable) {
+                application.log.error("Failed to find notes", e)
+                call.respond(HttpStatusCode.BadRequest, "Failed to find notes")
+            }
+        }
         patch<NoteResource.Id> { noteWithId ->
             lateinit var updateNoteInDto: UpdateNoteInDto
 
