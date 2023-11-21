@@ -26,13 +26,19 @@ class NotesRepositoryImpl : NotesRepository {
         id: Long,
         title: String?,
         content: String?,
-    ): Boolean = dbQuery {
-        NoteEntity
-            .update({ NoteEntity.id eq id }) { note ->
-                title?.let { note[NoteEntity.title] = it }
-                content?.let { note[NoteEntity.content] = it }
-            }
-    } > 0
+    ): Boolean {
+        if (title == null && content == null) {
+            return true
+        }
+
+        return dbQuery {
+            NoteEntity
+                .update({ NoteEntity.id eq id }) { note ->
+                    title?.let { note[NoteEntity.title] = it }
+                    content?.let { note[NoteEntity.content] = it }
+                }
+        } > 0
+    }
 
     override suspend fun findNote(id: Long): Note? = dbQuery {
         NoteEntity
