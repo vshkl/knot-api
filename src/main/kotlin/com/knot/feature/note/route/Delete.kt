@@ -2,6 +2,7 @@ package com.knot.feature.note.route
 
 import com.knot.feature.note.NoteResource
 import com.knot.feature.note.NotesRepository
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.application
 import io.ktor.server.application.call
 import io.ktor.server.application.log
@@ -15,14 +16,14 @@ fun Route.deleteNote(notesRepository: NotesRepository) {
             val deleted = notesRepository.deleteNote(id = noteWithId.id)
 
             if (deleted) {
-                call.respond(io.ktor.http.HttpStatusCode.OK)
+                call.respond(HttpStatusCode.OK)
             } else {
                 application.log.error("Failed to delete note")
-                call.respond(io.ktor.http.HttpStatusCode.BadRequest, "Failed to delete note")
+                call.respond(HttpStatusCode.BadRequest, "Failed to delete note")
             }
         } catch (e: Throwable) {
             application.log.error("Failed to delete note", e)
-            call.respond(io.ktor.http.HttpStatusCode.BadRequest, "Failed to delete note")
+            call.respond(HttpStatusCode.BadRequest, "Failed to delete note")
         }
     }
 }
