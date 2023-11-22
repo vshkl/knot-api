@@ -11,7 +11,7 @@ A playground for learning backend development using Kotlin and Ktor.
 
 ## What's not
 
-– Token refresh.
+- Token refresh.
 - Token tracking.
 - Email confirmation flow.
 - Password reset flow.
