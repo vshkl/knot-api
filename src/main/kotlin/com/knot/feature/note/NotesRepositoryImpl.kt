@@ -87,16 +87,3 @@ class NotesRepositoryImpl : NotesRepository {
             .deleteWhere { NoteEntity.id eq id }
     } > 0
 }
-
-/**
- * Converts a database [ResultRow] into a [Note] object.
- *
- * @return The converted [Note] object.
- */
-internal fun ResultRow.asNote(): Note {
-    return Note(
-        id = this[NoteEntity.id].value,
-        title = this[NoteEntity.title],
-        content = this[NoteEntity.content],
-    )
-}

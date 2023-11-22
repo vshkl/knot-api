@@ -19,7 +19,7 @@ fun Route.authRoutes(
         lateinit var signUpDto: SignUpDto
 
         try {
-            signUpDto = call.receive<SignUpDto>()
+            signUpDto = call.receive()
         } catch (e: ContentTransformationException) {
             application.log.error("Failed to process request", e)
             call.respond(HttpStatusCode.BadRequest, "Incomplete data")
@@ -59,7 +59,7 @@ fun Route.authRoutes(
         lateinit var signInDto: SignInDto
 
         try {
-            signInDto = call.receive<SignInDto>()
+            signInDto = call.receive()
         } catch (e: ContentTransformationException) {
             application.log.error("Failed to process request", e)
             call.respond(HttpStatusCode.BadRequest, "Incomplete data")

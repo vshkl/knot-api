@@ -18,11 +18,11 @@ fun Route.noteRoutes(
 ) {
     authenticate(JWT_NAME) {
         post<NoteResource> {
-            val user: User? = call.principal<User>()
+            val user: User? = call.principal()
             lateinit var createNoteDto: CreateNoteDto
 
             try {
-                createNoteDto = call.receive<CreateNoteDto>()
+                createNoteDto = call.receive()
             } catch (e: ContentTransformationException) {
                 application.log.error("Failed to process request", e)
                 call.respond(HttpStatusCode.BadRequest, "Incomplete data")
@@ -44,8 +44,7 @@ fun Route.noteRoutes(
                         content = createNoteDto.content,
                     )
                 }?.run {
-                    val noteDto = NoteDto(id = id, title = title, content = content)
-                    call.respond(HttpStatusCode.Created, noteDto)
+                    call.respond(HttpStatusCode.Created, this.asNoteDto())
                 } ?: run {
                     application.log.error("Failed to create note")
                     call.respond(HttpStatusCode.BadRequest, "Failed to create note")
@@ -57,19 +56,12 @@ fun Route.noteRoutes(
         }
         get<NoteResource> { notesQuery ->
             try {
-                val noteDtoLists: List<NoteDto> = notesRepository.readNotes(
+                val notesDto: NotesDto = notesRepository.readNotes(
                     limit = notesQuery.limit,
                     before = notesQuery.before,
                     after = notesQuery.after,
                     including = notesQuery.including,
-                ).map { note ->
-                    NoteDto(
-                        id = note.id,
-                        title = note.title,
-                        content = note.content,
-                    )
-                }
-                val notesDto = NotesDto(results = noteDtoLists)
+                ).asNotesDto()
                 call.respond(notesDto)
             } catch (e: Throwable) {
                 application.log.error("Failed to find notes", e)
@@ -80,7 +72,7 @@ fun Route.noteRoutes(
             lateinit var updateNoteDto: UpdateNoteDto
 
             try {
-                updateNoteDto = call.receive<UpdateNoteDto>()
+                updateNoteDto = call.receive()
             } catch (e: ContentTransformationException) {
                 application.log.error("Failed to process request", e)
                 call.respond(HttpStatusCode.BadRequest, "Incomplete data")
@@ -124,12 +116,7 @@ fun Route.noteRoutes(
                 val note: Note? = notesRepository.findNote(id = noteWithId.id)
 
                 if (note != null) {
-                    val noteDto = NoteDto(
-                        id = note.id,
-                        title = note.title,
-                        content = note.content,
-                    )
-                    call.respond(noteDto)
+                    call.respond(note.asNoteDto())
                 }
 
                 call.respond(HttpStatusCode.NotFound)
