@@ -1,5 +1,6 @@
 package com.knot.feature.auth
 
+import com.knot.feature.auth.dto.*
 import com.knot.feature.user.User
 import com.knot.feature.user.UsersRepository
 import io.ktor.http.*
@@ -87,24 +88,24 @@ fun Route.authRoutes(
         }
     }
     post<AuthResource.RefreshToken> {
-        lateinit var refreshTokenIn: RefreshTokenIn
+        lateinit var refreshTokenDto: RefreshTokenDto
 
         try {
-            refreshTokenIn = call.receive()
+            refreshTokenDto = call.receive()
         } catch (e: ContentTransformationException) {
             application.log.error("Failed to process request", e)
             call.respond(HttpStatusCode.BadRequest, "Incomplete data")
         }
 
         try {
-            val tokenType = jwtService.identifyToken(refreshTokenIn.refreshToken)
+            val tokenType = jwtService.identifyToken(refreshTokenDto.refreshToken)
             when (tokenType) {
                 TokenType.ACCESS -> {
                     application.log.error("Wrong token type")
                     call.respond(HttpStatusCode.Unauthorized)
                 }
                 TokenType.REFRESH -> {
-                    val userId = jwtService.identifyUser(refreshTokenIn.refreshToken)
+                    val userId = jwtService.identifyUser(refreshTokenDto.refreshToken)
                     val user: User? = usersRepository.findUser(userId)
 
                     if (user != null) {

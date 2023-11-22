@@ -1,9 +1,9 @@
-package com.knot.feature.auth
+package com.knot.feature.auth.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RefreshTokenIn(
+data class RefreshTokenDto(
     @SerialName("refresh-token") val refreshToken: String,
 )

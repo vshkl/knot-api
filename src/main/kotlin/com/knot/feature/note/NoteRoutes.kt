@@ -1,5 +1,6 @@
 package com.knot.feature.note
 
+import com.knot.feature.note.dto.*
 import com.knot.feature.user.User
 import com.knot.plugins.JWT_NAME
 import io.ktor.http.*
@@ -18,20 +19,20 @@ fun Route.noteRoutes(
     authenticate(JWT_NAME) {
         post<NoteResource> {
             val user: User? = call.principal<User>()
-            lateinit var createNoteInDto: CreateNoteInDto
+            lateinit var createNoteDto: CreateNoteDto
 
             try {
-                createNoteInDto = call.receive<CreateNoteInDto>()
+                createNoteDto = call.receive<CreateNoteDto>()
             } catch (e: ContentTransformationException) {
                 application.log.error("Failed to process request", e)
                 call.respond(HttpStatusCode.BadRequest, "Incomplete data")
             }
 
-            if (createNoteInDto.title.isBlank()) {
+            if (createNoteDto.title.isBlank()) {
                 call.respond(HttpStatusCode.BadRequest, "Note should have title")
             }
 
-            if (createNoteInDto.content.isBlank()) {
+            if (createNoteDto.content.isBlank()) {
                 call.respond(HttpStatusCode.BadRequest, "Note should have content")
             }
 
@@ -39,12 +40,12 @@ fun Route.noteRoutes(
                 user?.id?.let { userId ->
                     notesRepository.createNote(
                         userId = userId,
-                        title = createNoteInDto.title,
-                        content = createNoteInDto.content,
+                        title = createNoteDto.title,
+                        content = createNoteDto.content,
                     )
                 }?.run {
-                    val noteOutDto = NoteOutDto(id = id, title = title, content = content)
-                    call.respond(HttpStatusCode.Created, noteOutDto)
+                    val noteDto = NoteDto(id = id, title = title, content = content)
+                    call.respond(HttpStatusCode.Created, noteDto)
                 } ?: run {
                     application.log.error("Failed to create note")
                     call.respond(HttpStatusCode.BadRequest, "Failed to create note")
@@ -56,30 +57,30 @@ fun Route.noteRoutes(
         }
         get<NoteResource> { notesQuery ->
             try {
-                val noteOutDtoList: List<NoteOutDto> = notesRepository.readNotes(
+                val noteDtoLists: List<NoteDto> = notesRepository.readNotes(
                     limit = notesQuery.limit,
                     before = notesQuery.before,
                     after = notesQuery.after,
                     including = notesQuery.including,
                 ).map { note ->
-                    NoteOutDto(
+                    NoteDto(
                         id = note.id,
                         title = note.title,
                         content = note.content,
                     )
                 }
-                val notesOutDto = NotesOutDto(results = noteOutDtoList)
-                call.respond(notesOutDto)
+                val notesDto = NotesDto(results = noteDtoLists)
+                call.respond(notesDto)
             } catch (e: Throwable) {
                 application.log.error("Failed to find notes", e)
                 call.respond(HttpStatusCode.BadRequest, "Failed to find notes")
             }
         }
         patch<NoteResource.Id> { noteWithId ->
-            lateinit var updateNoteInDto: UpdateNoteInDto
+            lateinit var updateNoteDto: UpdateNoteDto
 
             try {
-                updateNoteInDto = call.receive<UpdateNoteInDto>()
+                updateNoteDto = call.receive<UpdateNoteDto>()
             } catch (e: ContentTransformationException) {
                 application.log.error("Failed to process request", e)
                 call.respond(HttpStatusCode.BadRequest, "Incomplete data")
@@ -88,8 +89,8 @@ fun Route.noteRoutes(
             try {
                 val updated = notesRepository.updateNote(
                     id = noteWithId.id,
-                    title = updateNoteInDto.title,
-                    content = updateNoteInDto.content,
+                    title = updateNoteDto.title,
+                    content = updateNoteDto.content,
                 )
 
                 if (updated) {
@@ -123,12 +124,12 @@ fun Route.noteRoutes(
                 val note: Note? = notesRepository.findNote(id = noteWithId.id)
 
                 if (note != null) {
-                    val noteOutDto = NoteOutDto(
+                    val noteDto = NoteDto(
                         id = note.id,
                         title = note.title,
                         content = note.content,
                     )
-                    call.respond(noteOutDto)
+                    call.respond(noteDto)
                 }
 
                 call.respond(HttpStatusCode.NotFound)

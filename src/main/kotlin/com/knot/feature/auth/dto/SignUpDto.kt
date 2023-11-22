@@ -1,4 +1,4 @@
-package com.knot.feature.auth
+package com.knot.feature.auth.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -1,5 +1,6 @@
 package com.knot.feature.user
 
+import com.knot.feature.user.dto.UserDto
 import com.knot.plugins.JWT_NAME
 import io.ktor.http.*
 import io.ktor.server.application.*

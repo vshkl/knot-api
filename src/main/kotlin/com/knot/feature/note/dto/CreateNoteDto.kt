@@ -1,10 +1,9 @@
-package com.knot.feature.note
+package com.knot.feature.note.dto
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NoteOutDto(
-    val id: Long,
+data class CreateNoteDto(
     val title: String,
     val content: String,
 )
