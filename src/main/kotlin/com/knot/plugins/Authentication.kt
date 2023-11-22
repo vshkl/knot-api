@@ -2,9 +2,10 @@ package com.knot.plugins
 
 import com.knot.feature.auth.JwtService
 import com.knot.feature.user.UsersRepository
-import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.jwt.jwt
 
 const val JWT_NAME = "jwt"
 private const val JWT_REALM = "knot-server"

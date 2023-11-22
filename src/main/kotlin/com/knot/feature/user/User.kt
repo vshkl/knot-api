@@ -1,6 +1,6 @@
 package com.knot.feature.user
 
-import io.ktor.server.auth.*
+import io.ktor.server.auth.Principal
 import org.jetbrains.exposed.sql.ResultRow
 import java.io.Serializable
 

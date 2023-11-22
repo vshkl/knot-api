@@ -42,17 +42,6 @@ interface NotesRepository {
     suspend fun findNote(id: Long): Note?
 
     /**
-     * Reads notes from a database with pagination.
-     *
-     * @param beforeId The ID before which the notes should be fetched.
-     *                  Only notes with an ID less than `beforeId` will be returned.
-     * @param afterId The ID after which the notes should be fetched.
-     *                  Only notes with an ID greater than `afterId` will be returned.
-     * @param pageSize The maximum number of notes to be fetched per page.
-     * @return The list of notes fetched from the database.
-     */
-
-    /**
      * Reads notes in paged way.
      *
      * @param limit The maximum number of notes to read. Must be a positive integer.

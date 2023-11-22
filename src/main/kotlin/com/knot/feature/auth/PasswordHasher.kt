@@ -1,7 +1,7 @@
 package com.knot.feature.auth
 
 import io.github.cdimascio.dotenv.dotenv
-import io.ktor.util.*
+import io.ktor.util.hex
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 

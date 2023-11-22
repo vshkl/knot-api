@@ -1,17 +1,26 @@
 package com.knot.feature.note
 
-import com.knot.feature.note.dto.*
+import com.knot.feature.note.dto.CreateNoteDto
+import com.knot.feature.note.dto.NotesDto
+import com.knot.feature.note.dto.UpdateNoteDto
+import com.knot.feature.note.dto.asNoteDto
+import com.knot.feature.note.dto.asNotesDto
 import com.knot.feature.user.User
 import com.knot.plugins.JWT_NAME
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.request.*
-import io.ktor.server.resources.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.application
+import io.ktor.server.application.call
+import io.ktor.server.application.log
+import io.ktor.server.auth.authenticate
+import io.ktor.server.auth.principal
+import io.ktor.server.request.ContentTransformationException
+import io.ktor.server.request.receive
+import io.ktor.server.resources.delete
+import io.ktor.server.resources.get
 import io.ktor.server.resources.patch
 import io.ktor.server.resources.post
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
 
 fun Route.noteRoutes(
     notesRepository: NotesRepository,

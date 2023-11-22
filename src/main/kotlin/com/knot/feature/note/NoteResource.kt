@@ -1,6 +1,6 @@
 package com.knot.feature.note
 
-import io.ktor.resources.*
+import io.ktor.resources.Resource
 
 @Resource("/notes")
 class NoteResource(

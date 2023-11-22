@@ -1,7 +1,5 @@
 package com.knot.feature.user
 
-import com.knot.feature.user.User
-
 /**
  * Interface defining methods for performing operations on users data.
  */

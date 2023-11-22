@@ -1,6 +1,6 @@
 package com.knot.feature.auth
 
-import io.ktor.resources.*
+import io.ktor.resources.Resource
 
 @Resource("/auth")
 class AuthResource {
