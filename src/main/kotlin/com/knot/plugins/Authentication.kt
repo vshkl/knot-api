@@ -20,8 +20,8 @@ fun Application.configureAuthentication(
             validate { jwtCredential ->
                 val payload = jwtCredential.payload
                 val claim = payload.getClaim("id")
-                val claimStr = claim.asLong()
-                return@validate usersRepository.findUser(claimStr)
+                val userId = claim.asLong()
+                return@validate usersRepository.findUser(userId)
             }
         }
     }

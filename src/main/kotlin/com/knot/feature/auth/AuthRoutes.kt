@@ -40,8 +40,11 @@ fun Route.authRoutes(
             )
 
             newUser?.run {
-                val accessTokenDto = AccessTokenDto(token = jwtService.generateToken(newUser))
-                call.respond(HttpStatusCode.Created, accessTokenDto)
+                val tokensDto = TokensDto(
+                    accessToken = jwtService.generateAccessToken(newUser),
+                    refreshToken = jwtService.generateRefreshToken(newUser),
+                )
+                call.respond(HttpStatusCode.Created, tokensDto)
             } ?: run {
                 application.log.error("Failed to create user")
                 call.respond(HttpStatusCode.BadRequest, "Failed to create user")
@@ -69,8 +72,11 @@ fun Route.authRoutes(
         try {
             val user: User? = usersRepository.findUser(signInDto.email)
             if (passwordHash == user?.passwordHash) {
-                val accessTokenDto = AccessTokenDto(token = jwtService.generateToken(user))
-                call.respond(accessTokenDto)
+                val tokensDto = TokensDto(
+                    accessToken = jwtService.generateAccessToken(user),
+                    refreshToken = jwtService.generateRefreshToken(user),
+                )
+                call.respond(tokensDto)
             } else {
                 application.log.error("Failed to create user")
                 call.respond(HttpStatusCode.Unauthorized)

@@ -28,22 +28,43 @@ class JwtService {
         .build()
 
     /**
-     * Generates a token for the given user.
+     * Generates an access token for the given user.
      *
      * @param user The user for whom the token is generated.
      * @return The generated token as a string.
      */
-    fun generateToken(user: User): String = JWT.create()
+    fun generateAccessToken(user: User): String = JWT.create()
         .withSubject("Authentication")
         .withIssuer(issuer)
         .withClaim("id", user.id)
-        .withExpiresAt(expiresAt())
+        .withClaim("type", TokenType.ACCESS.name)
+        .withExpiresAt(expiresAt(TokenType.ACCESS))
         .sign(algorithm)
 
-    private fun expiresAt(): Date =
-        LocalDateTime.now()
-            .plusDays(5)
-            .atZone(ZoneId.systemDefault())
-            .toInstant()
-            .let(Date::from)
+    /**
+     * Generates a refresh token for the given user.
+     *
+     * @param user The user for whom the token is generated.
+     * @return The generated token as a string.
+     */
+    fun generateRefreshToken(user: User): String = JWT.create()
+        .withSubject("Authentication")
+        .withIssuer(issuer)
+        .withClaim("id", user.id)
+        .withClaim("type", TokenType.REFRESH.name)
+        .withExpiresAt(expiresAt(TokenType.REFRESH))
+        .sign(algorithm)
+
+    private fun expiresAt(tokenType: TokenType): Date =
+        when (tokenType) {
+            TokenType.ACCESS -> 5L
+            TokenType.REFRESH -> 30L
+        }.let { expiresIn ->
+            LocalDateTime.now()
+                .plusDays(expiresIn)
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .let(Date::from)
+        }
+
 }
