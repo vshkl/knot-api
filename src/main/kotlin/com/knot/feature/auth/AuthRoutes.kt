@@ -86,4 +86,42 @@ fun Route.authRoutes(
             call.respond(HttpStatusCode.BadRequest, "Failed to sign in")
         }
     }
+    post<AuthResource.RefreshToken> {
+        lateinit var refreshTokenIn: RefreshTokenIn
+
+        try {
+            refreshTokenIn = call.receive()
+        } catch (e: ContentTransformationException) {
+            application.log.error("Failed to process request", e)
+            call.respond(HttpStatusCode.BadRequest, "Incomplete data")
+        }
+
+        try {
+            val tokenType = jwtService.identifyToken(refreshTokenIn.refreshToken)
+            when (tokenType) {
+                TokenType.ACCESS -> {
+                    application.log.error("Wrong token type")
+                    call.respond(HttpStatusCode.Unauthorized)
+                }
+                TokenType.REFRESH -> {
+                    val userId = jwtService.identifyUser(refreshTokenIn.refreshToken)
+                    val user: User? = usersRepository.findUser(userId)
+
+                    if (user != null) {
+                        val tokensDto = TokensDto(
+                            accessToken = jwtService.generateAccessToken(user),
+                            refreshToken = jwtService.generateRefreshToken(user),
+                        )
+                        call.respond(tokensDto)
+                    } else {
+                        application.log.error("Failed to refresh token")
+                        call.respond(HttpStatusCode.Unauthorized)
+                    }
+                }
+            }
+        } catch (e: Throwable) {
+            application.log.error("Failed to refresh token", e)
+            call.respond(HttpStatusCode.BadRequest, "Failed to refresh token")
+        }
+    }
 }

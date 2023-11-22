@@ -28,6 +28,31 @@ class JwtService {
         .build()
 
     /**
+     * Identifies the type of the given token represented by [TokenType].
+     *
+     * @param token The token to be identified.
+     * @return The [TokenType] of the given token.
+     */
+    fun identifyToken(token: String): TokenType {
+        return verifier.verify(token)
+            .getClaim("type")
+            .asString()
+            .let(TokenType::valueOf)
+    }
+
+    /**
+     * Identifies the user based on the provided token.
+     *
+     * @param token The token used to authenticate the user.
+     * @return The ID of the user.
+     */
+    fun identifyUser(token: String): Long {
+        return verifier.verify(token)
+            .getClaim("id")
+            .asLong()
+    }
+
+    /**
      * Generates an access token for the given user.
      *
      * @param user The user for whom the token is generated.
