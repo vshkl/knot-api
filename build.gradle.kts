@@ -5,11 +5,13 @@ val exposed_version: String by project
 val postgres_version: String by project
 val hikaricp_version: String by project
 val dotenv_version: String by project
+val detekt_version: String by project
 
 plugins {
     kotlin("jvm") version "1.9.20"
     kotlin("plugin.serialization") version "1.9.20"
     id("io.ktor.plugin") version "2.3.6"
+    id("io.gitlab.arturbosch.detekt") version ("1.23.3")
 }
 
 group = "com.knot"
@@ -20,6 +22,12 @@ application {
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+}
+
+detekt {
+    toolVersion = detekt_version
+    config.setFrom(file("config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
 }
 
 repositories {
@@ -46,6 +54,8 @@ dependencies {
     implementation("io.github.cdimascio:dotenv-kotlin:$dotenv_version")
     /* Logging */
     implementation("ch.qos.logback:logback-classic:$logback_version")
+    /* Detekt */
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.3")
     /* Testing */
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
