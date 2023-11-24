@@ -1,6 +1,5 @@
 package com.knot.feature.auth.route
 
-import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
 import arrow.core.raise.result
 import com.knot.feature.auth.AuthResource
@@ -13,12 +12,11 @@ import io.ktor.server.application.application
 import io.ktor.server.application.call
 import io.ktor.server.application.log
 import io.ktor.server.plugins.BadRequestException
+import io.ktor.server.plugins.requestvalidation.RequestValidationException
 import io.ktor.server.request.receive
 import io.ktor.server.resources.post
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
-
-private const val MIN_PASSWORD_LENGTH = 8
 
 fun Route.signUp(
     usersRepository: UsersRepository,
@@ -29,21 +27,15 @@ fun Route.signUp(
         result {
             val request = call.receive<SignUpDto>()
 
-            ensure(request.email.isNotBlank()) {
-                IllegalArgumentException("Email can not be empty")
-            }
-            ensure(request.displayName.isNotBlank()) {
-                IllegalArgumentException("Display name can not be empty")
-            }
-            ensure(request.password.length >= MIN_PASSWORD_LENGTH) {
-                IllegalArgumentException("Password is too short")
-            }
-
             val user = usersRepository.createUser(
                 email = request.email,
                 displayName = request.displayName,
                 passwordHash = hashFunction(request.password),
-            ).run { ensureNotNull(this) { NoSuchElementException("User not created") } }
+            ).run {
+                ensureNotNull(this) {
+                    NoSuchElementException("User not created")
+                }
+            }
 
             return@result TokensDto(
                 accessToken = jwtService.generateAccessToken(user),
@@ -57,8 +49,8 @@ fun Route.signUp(
             when (error) {
                 is BadRequestException ->
                     call.respond(HttpStatusCode.BadRequest, "Malformed request")
-                is IllegalArgumentException ->
-                    call.respond(HttpStatusCode.BadRequest, error.localizedMessage)
+                is RequestValidationException ->
+                    call.respond(HttpStatusCode.BadRequest, error.reasons.first())
                 else ->
                     call.respond(HttpStatusCode.InternalServerError, "Unknown error")
             }

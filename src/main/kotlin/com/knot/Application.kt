@@ -7,6 +7,7 @@ import com.knot.feature.note.NotesRepositoryImpl
 import com.knot.feature.user.UsersRepositoryImpl
 import com.knot.plugins.configureAuthentication
 import com.knot.plugins.configureContentNegotiation
+import com.knot.plugins.configureRequestValidation
 import com.knot.plugins.configureResources
 import com.knot.plugins.configureRouting
 import io.ktor.server.application.Application
@@ -25,6 +26,7 @@ fun Application.module() {
 
     DatabaseFactory.init()
     configureContentNegotiation()
+    configureRequestValidation()
     configureAuthentication(
         usersRepository = usersRepository,
         jwtService = jwtService,

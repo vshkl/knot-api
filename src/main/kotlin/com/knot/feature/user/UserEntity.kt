@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.id.LongIdTable
 
 private const val EMAIL_LENGTH = 128
 private const val DISPLAY_NAME_LENGTH = 256
-private const val PASSWORD_LENGTH = 64
+private const val PASSWORD_HASH_LENGTH = 64
 
 /**
  * The Users class represents a database table for users of the system.
@@ -23,7 +23,7 @@ object UserEntity : LongIdTable() {
     val email = varchar("email", EMAIL_LENGTH)
         .uniqueIndex()
     val displayName = varchar("display_name", DISPLAY_NAME_LENGTH)
-    val passwordHash = varchar("password_hash", PASSWORD_LENGTH)
+    val passwordHash = varchar("password_hash", PASSWORD_HASH_LENGTH)
 
     override val tableName: String
         get() = "Users"

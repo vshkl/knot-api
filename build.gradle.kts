@@ -43,6 +43,7 @@ dependencies {
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
     implementation("io.ktor:ktor-server-resources:$ktorVersion")
+    implementation("io.ktor:ktor-server-request-validation:$ktorVersion")
     /* Serialization */
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     /* Database */

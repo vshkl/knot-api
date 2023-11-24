@@ -12,6 +12,7 @@ import io.ktor.server.application.application
 import io.ktor.server.application.call
 import io.ktor.server.application.log
 import io.ktor.server.plugins.BadRequestException
+import io.ktor.server.plugins.requestvalidation.RequestValidationException
 import io.ktor.server.request.receive
 import io.ktor.server.resources.post
 import io.ktor.server.response.respond
@@ -44,6 +45,8 @@ fun Route.signIn(
             when (error) {
                 is BadRequestException ->
                     call.respond(HttpStatusCode.BadRequest, "Malformed request")
+                is RequestValidationException ->
+                    call.respond(HttpStatusCode.BadRequest, error.reasons.first())
                 is NoSuchElementException ->
                     call.respond(HttpStatusCode.Unauthorized, error.localizedMessage)
                 else ->
