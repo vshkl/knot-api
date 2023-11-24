@@ -46,9 +46,12 @@ class NotesRepositoryImpl : NotesRepository {
         } > 0
     }
 
-    override suspend fun findNote(id: Long): Note? = dbQuery {
+    override suspend fun readNote(
+        userId: Long,
+        id: Long,
+    ): Note? = dbQuery {
         NoteEntity
-            .select { NoteEntity.id eq id }
+            .select { NoteEntity.userId eq userId and (NoteEntity.id eq id) }
             .singleOrNull()
             ?.asNote()
     }

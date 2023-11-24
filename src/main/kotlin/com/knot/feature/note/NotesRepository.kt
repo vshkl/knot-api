@@ -36,10 +36,14 @@ interface NotesRepository {
     /**
      * Finds a note by its unique identifier.
      *
+     * @param userId The ID of the user whose note to be read.
      * @param id The identifier of the note to be found.
      * @return The found note, or null if no note is found with the specified identifier.
      */
-    suspend fun findNote(id: Long): Note?
+    suspend fun readNote(
+        userId: Long,
+        id: Long,
+    ): Note?
 
     /**
      * Reads notes in paged way.
