@@ -22,12 +22,14 @@ interface NotesRepository {
     /**
      * Updates a note with the specified ID, title, and content.
      *
+     * @param userId The ID of the user whose note to be updated.
      * @param id The ID of the note to update.
      * @param title The new title for the note. Pass null to keep the existing title unchanged.
      * @param content The new content for the note. Pass null to keep the existing content unchanged.
      * @return true if the note was successfully updated, false otherwise.
      */
     suspend fun updateNote(
+        userId: Long,
         id: Long,
         title: String?,
         content: String?,

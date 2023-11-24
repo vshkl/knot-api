@@ -29,6 +29,7 @@ class NotesRepositoryImpl : NotesRepository {
     }
 
     override suspend fun updateNote(
+        userId: Long,
         id: Long,
         title: String?,
         content: String?,
@@ -39,7 +40,7 @@ class NotesRepositoryImpl : NotesRepository {
 
         return dbQuery {
             NoteEntity
-                .update({ NoteEntity.id eq id }) { note ->
+                .update({ NoteEntity.userId eq userId and (NoteEntity.id eq id) }) { note ->
                     title?.let { note[NoteEntity.title] = it }
                     content?.let { note[NoteEntity.content] = it }
                 }

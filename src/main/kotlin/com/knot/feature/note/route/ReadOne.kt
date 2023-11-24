@@ -44,17 +44,5 @@ fun Route.readNote(notesRepository: NotesRepository) {
                     call.respond(HttpStatusCode.InternalServerError, "Unknown error")
             }
         })
-//        try {
-//            val note: Note? = notesRepository.findNote(id = noteWithId.id)
-//
-//            if (note != null) {
-//                call.respond(note.asNoteDto())
-//            }
-//
-//            call.respond(HttpStatusCode.NotFound)
-//        } catch (e: Throwable) {
-//            application.log.error("Failed to find note", e)
-//            call.respond(HttpStatusCode.BadRequest, "Failed to find note")
-//        }
     }
 }
