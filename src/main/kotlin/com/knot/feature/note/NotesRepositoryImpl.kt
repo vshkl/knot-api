@@ -8,7 +8,6 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 
 class NotesRepositoryImpl : NotesRepository {
@@ -55,32 +54,26 @@ class NotesRepositoryImpl : NotesRepository {
     }
 
     override suspend fun readNotes(
+        userId: Long,
         limit: Int,
         before: Long?,
         after: Long?,
         including: Boolean,
     ): List<Note> = dbQuery {
         when {
-            before != null && after == null -> {
-                when (including) {
-                    true -> NoteEntity.select { NoteEntity.id lessEq before }
-                    false -> NoteEntity.select { NoteEntity.id less before }
-                }
-                    .orderBy(NoteEntity.id, SortOrder.DESC)
-                    .limit(limit)
-                    .reversed()
+            before != null && after == null -> when (including) {
+                true -> NoteEntity.select { NoteEntity.userId eq userId and (NoteEntity.id lessEq before) }
+                false -> NoteEntity.select { NoteEntity.userId eq userId and (NoteEntity.id less before) }
             }
-
-            before == null && after != null -> {
-                when (including) {
-                    true -> NoteEntity.select { NoteEntity.id greaterEq after }
-                    false -> NoteEntity.select { NoteEntity.id greater after }
-                }
+                .orderBy(NoteEntity.id, SortOrder.DESC)
+                .limit(limit)
+                .reversed()
+            before == null && after != null -> when (including) {
+                true -> NoteEntity.select { NoteEntity.userId eq userId and (NoteEntity.id greaterEq after) }
+                false -> NoteEntity.select { NoteEntity.userId eq userId and (NoteEntity.id greater after) }
             }
-
-            else -> {
-                NoteEntity.selectAll()
-            }
+            else ->
+                NoteEntity.select { NoteEntity.userId eq userId }
         }
             .windowed(size = limit, step = limit, partialWindows = true) { window ->
                 window.map(ResultRow::asNote)

@@ -44,6 +44,7 @@ interface NotesRepository {
     /**
      * Reads notes in paged way.
      *
+     * @param userId The ID of the user whose notes to be read.
      * @param limit The maximum number of notes to read. Must be a positive integer.
      * @param before The ID indicating the upper bound for note reading. In backward direction. Can be null.
      * @param after The ID indicating the lower bound for note reading. In forward direction. Can be null.
@@ -51,6 +52,7 @@ interface NotesRepository {
      * @return A list of Note objects obtained from the source within the specified range.
      */
     suspend fun readNotes(
+        userId: Long,
         limit: Int,
         before: Long?,
         after: Long?,
