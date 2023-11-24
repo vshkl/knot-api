@@ -11,7 +11,6 @@ A playground for learning backend development using Kotlin and Ktor.
 
 ## What's not
 
-- Token refresh.
 - Token tracking.
 - Email confirmation flow.
 - Password reset flow.
@@ -19,6 +18,7 @@ A playground for learning backend development using Kotlin and Ktor.
 ## Endpoints
 - `POST`    `/auth/sign-up`
 - `POST`    `/auth/sign-in`
+- `POST`    `/auth/refresh-token`
 - `GET`     `/user`
 - `GET`     `/notes?limit=&before=&after=&including=`
 - `POST`    `/notes`
