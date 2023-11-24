@@ -50,7 +50,7 @@ fun Route.signUp(
                 refreshToken = jwtService.generateRefreshToken(user),
             )
         }.fold({ tokens ->
-            call.respond(tokens)
+            call.respond(HttpStatusCode.Created, tokens)
         }, { error ->
             application.log.error("Sign Up failed: ${error.localizedMessage}")
 
