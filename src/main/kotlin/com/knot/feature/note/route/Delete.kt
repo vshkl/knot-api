@@ -27,7 +27,11 @@ fun Route.deleteNote(notesRepository: NotesRepository) {
             return@result notesRepository.deleteNote(
                 id = noteWithId.id,
                 userId = user.id,
-            ).run { ensure(this) { NoSuchElementException("No note deleted") } }
+            ).run {
+                ensure(this) {
+                    NoSuchElementException("No note deleted")
+                }
+            }
         }.fold({
             call.respond(HttpStatusCode.OK)
         }, { error ->

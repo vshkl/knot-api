@@ -27,7 +27,11 @@ fun Route.readNote(notesRepository: NotesRepository) {
             val note = notesRepository.readNote(
                 userId = user.id,
                 id = noteWithId.id,
-            ).run { ensureNotNull(this) { NoSuchElementException("Note not found") } }
+            ).run {
+                ensureNotNull(this) {
+                    NoSuchElementException("Note not found")
+                }
+            }
 
             return@result note.asNoteDto()
         }.fold({ note ->

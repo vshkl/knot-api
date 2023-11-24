@@ -13,13 +13,11 @@ import io.ktor.server.application.call
 import io.ktor.server.application.log
 import io.ktor.server.auth.principal
 import io.ktor.server.plugins.BadRequestException
+import io.ktor.server.plugins.requestvalidation.RequestValidationException
 import io.ktor.server.request.receive
 import io.ktor.server.resources.patch
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
-
-private const val MAX_TITLE_LENGTH = 80
-private const val MAX_CONTENT_LENGTH = 1000
 
 fun Route.updateNote(notesRepository: NotesRepository) {
     patch<NoteResource.Id> { noteWithId ->
@@ -29,12 +27,6 @@ fun Route.updateNote(notesRepository: NotesRepository) {
 
             ensureNotNull(user) {
                 IllegalAccessException("Unauthorized")
-            }
-            ensure((request.title?.length ?: 0) <= MAX_TITLE_LENGTH) {
-                IllegalArgumentException("Note title can not be more that $MAX_TITLE_LENGTH long")
-            }
-            ensure((request.content?.length ?: 0) <= MAX_CONTENT_LENGTH) {
-                IllegalArgumentException("Note content can not be more that $MAX_CONTENT_LENGTH long")
             }
 
             return@result notesRepository.updateNote(
@@ -53,8 +45,8 @@ fun Route.updateNote(notesRepository: NotesRepository) {
                     call.respond(HttpStatusCode.BadRequest, "Malformed request")
                 is IllegalAccessException ->
                     call.respond(HttpStatusCode.Unauthorized, error.localizedMessage)
-                is IllegalArgumentException ->
-                    call.respond(HttpStatusCode.BadRequest, error.localizedMessage)
+                is RequestValidationException ->
+                    call.respond(HttpStatusCode.BadRequest, error.reasons.first())
                 is NoSuchElementException ->
                     call.respond(HttpStatusCode.BadRequest, error.localizedMessage)
                 else ->
