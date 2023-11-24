@@ -57,7 +57,7 @@ fun Route.signUp(
             when (error) {
                 is BadRequestException ->
                     call.respond(HttpStatusCode.BadRequest, "Malformed request")
-                is IllegalAccessException ->
+                is IllegalArgumentException ->
                     call.respond(HttpStatusCode.BadRequest, error.localizedMessage)
                 else ->
                     call.respond(HttpStatusCode.InternalServerError, "Unknown error")

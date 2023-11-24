@@ -37,10 +37,10 @@ fun Route.createNote(notesRepository: NotesRepository) {
             ensure(request.content.isNotBlank()) {
                 IllegalArgumentException("Note content can not be empty")
             }
-            ensure(request.title.length > MAX_TITLE_LENGTH) {
+            ensure(request.title.length <= MAX_TITLE_LENGTH) {
                 IllegalArgumentException("Note title can not be more that $MAX_TITLE_LENGTH long")
             }
-            ensure(request.content.length > MAX_CONTENT_LENGTH) {
+            ensure(request.content.length <= MAX_CONTENT_LENGTH) {
                 IllegalArgumentException("Note content can not be more that $MAX_CONTENT_LENGTH long")
             }
 
@@ -54,7 +54,7 @@ fun Route.createNote(notesRepository: NotesRepository) {
         }.fold({ note ->
             call.respond(HttpStatusCode.Created, note)
         }, { error ->
-            application.log.error("Sign Up failed: ${error.localizedMessage}")
+            application.log.error("Note create failed: ${error.localizedMessage}")
 
             when (error) {
                 is BadRequestException ->

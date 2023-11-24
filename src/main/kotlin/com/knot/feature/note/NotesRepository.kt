@@ -61,7 +61,11 @@ interface NotesRepository {
      * Deletes a note with the specified ID.
      *
      * @param id The ID of the note to be deleted.
+     * @param userId The ID of the user whose note is being deleted.
      * @return `true` if the note was successfully deleted, `false` otherwise.
      */
-    suspend fun deleteNote(id: Long): Boolean
+    suspend fun deleteNote(
+        id: Long,
+        userId: Long,
+    ): Boolean
 }
