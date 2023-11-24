@@ -1,5 +1,7 @@
 package com.knot.feature.user.route
 
+import arrow.core.raise.ensureNotNull
+import arrow.core.raise.result
 import com.knot.feature.user.User
 import com.knot.feature.user.UserResource
 import com.knot.feature.user.dto.asUserDto
@@ -14,13 +16,24 @@ import io.ktor.server.routing.Route
 
 fun Route.readUser() {
     get<UserResource> {
-        val user: User? = call.principal()
+        result {
+            val user = call.principal<User>()
+            ensureNotNull(user) {
+                IllegalAccessException("Unauthorized")
+            }
 
-        user?.run {
-            call.respond(user.asUserDto())
-        } ?: run {
-            application.log.error("Can't find user")
-            call.respond(HttpStatusCode.Unauthorized)
-        }
+            return@result user.asUserDto()
+        }.fold({ user ->
+            call.respond(user)
+        }, { error ->
+            application.log.error("User read failed: ${error.localizedMessage}")
+
+            when (error) {
+                is IllegalAccessException ->
+                    call.respond(HttpStatusCode.Unauthorized, error.localizedMessage)
+                else ->
+                    call.respond(HttpStatusCode.InternalServerError, "Unknown error")
+            }
+        })
     }
 }
