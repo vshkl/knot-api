@@ -6,7 +6,6 @@ import com.knot.feature.auth.AuthResource
 import com.knot.feature.auth.JwtService
 import com.knot.feature.auth.dto.SignInDto
 import com.knot.feature.auth.dto.TokensDto
-import com.knot.feature.user.User
 import com.knot.feature.user.UsersRepository
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.application
@@ -25,20 +24,24 @@ fun Route.signIn(
 ) {
     post<AuthResource.SignIn> {
         result {
-            val request: SignInDto = call.receive()
-            val user: User = usersRepository.findUser(request.email)
+            val request = call.receive<SignInDto>()
+            val user = usersRepository.findUser(request.email)
                 ?.takeIf { hashFunction(request.password) == it.passwordHash }
-                .run { ensureNotNull(this) { NoSuchElementException("User not found") } }
 
-            TokensDto(
+            ensureNotNull(user) {
+                NoSuchElementException("User not found")
+            }
+
+            return@result TokensDto(
                 accessToken = jwtService.generateAccessToken(user),
                 refreshToken = jwtService.generateRefreshToken(user),
             )
         }.fold({ tokens ->
             call.respond(tokens)
-        }, {
-            application.log.error("Sign In failed: ${it.localizedMessage}")
-            when (it) {
+        }, { error ->
+            application.log.error("Sign In failed: ${error.localizedMessage}")
+
+            when (error) {
                 is BadRequestException ->
                     call.respond(HttpStatusCode.BadRequest, "Malformed request")
                 is NoSuchElementException ->
