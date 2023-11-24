@@ -2,6 +2,7 @@ package com.knot.feature.auth.route
 
 import arrow.core.raise.ensureNotNull
 import arrow.core.raise.result
+import com.knot.common.dto.ApiResponse
 import com.knot.feature.auth.AuthResource
 import com.knot.feature.auth.JwtService
 import com.knot.feature.auth.dto.SignInDto
@@ -38,19 +39,19 @@ fun Route.signIn(
                 refreshToken = jwtService.generateRefreshToken(user),
             )
         }.fold({ tokens ->
-            call.respond(tokens)
+            call.respond(ApiResponse.Success(tokens))
         }, { error ->
             application.log.error("Sign In failed: ${error.localizedMessage}")
 
             when (error) {
                 is BadRequestException ->
-                    call.respond(HttpStatusCode.BadRequest, "Malformed request")
+                    call.respond(HttpStatusCode.BadRequest, ApiResponse.Error("Malformed request"))
                 is RequestValidationException ->
-                    call.respond(HttpStatusCode.BadRequest, error.reasons.first())
+                    call.respond(HttpStatusCode.BadRequest, ApiResponse.Error(error.reasons.first()))
                 is NoSuchElementException ->
-                    call.respond(HttpStatusCode.Unauthorized, error.localizedMessage)
+                    call.respond(HttpStatusCode.Unauthorized, ApiResponse.Error(error.localizedMessage))
                 else ->
-                    call.respond(HttpStatusCode.InternalServerError, "Unknown error")
+                    call.respond(HttpStatusCode.InternalServerError, ApiResponse.Error("Unknown error"))
             }
         })
     }

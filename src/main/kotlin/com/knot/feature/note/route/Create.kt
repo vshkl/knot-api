@@ -2,6 +2,7 @@ package com.knot.feature.note.route
 
 import arrow.core.raise.ensureNotNull
 import arrow.core.raise.result
+import com.knot.common.dto.ApiResponse
 import com.knot.feature.note.NoteResource
 import com.knot.feature.note.NotesRepository
 import com.knot.feature.note.dto.CreateNoteDto
@@ -41,19 +42,19 @@ fun Route.createNote(notesRepository: NotesRepository) {
 
             return@result note.asNoteDto()
         }.fold({ note ->
-            call.respond(HttpStatusCode.Created, note)
+            call.respond(HttpStatusCode.Created, ApiResponse.Success(note))
         }, { error ->
             application.log.error("Note create failed: ${error.localizedMessage}")
 
             when (error) {
                 is BadRequestException ->
-                    call.respond(HttpStatusCode.BadRequest, "Malformed request")
+                    call.respond(HttpStatusCode.BadRequest, ApiResponse.Error("Malformed request"))
                 is RequestValidationException ->
-                    call.respond(HttpStatusCode.BadRequest, error.reasons.first())
+                    call.respond(HttpStatusCode.BadRequest, ApiResponse.Error(error.reasons.first()))
                 is IllegalAccessException ->
-                    call.respond(HttpStatusCode.Unauthorized, error.localizedMessage)
+                    call.respond(HttpStatusCode.Unauthorized, ApiResponse.Error(error.localizedMessage))
                 else ->
-                    call.respond(HttpStatusCode.InternalServerError, "Unknown error")
+                    call.respond(HttpStatusCode.InternalServerError, ApiResponse.Error("Unknown error"))
             }
         })
     }

@@ -2,6 +2,7 @@ package com.knot.feature.note.route
 
 import arrow.core.raise.ensureNotNull
 import arrow.core.raise.result
+import com.knot.common.dto.ApiResponse
 import com.knot.feature.note.NoteResource
 import com.knot.feature.note.NotesRepository
 import com.knot.feature.note.dto.asNotesDto
@@ -34,15 +35,15 @@ fun Route.readNotes(notesRepository: NotesRepository) {
 
             return@result notes.asNotesDto()
         }.fold({ notes ->
-            call.respond(notes)
+            call.respond(ApiResponse.Success(notes))
         }, { error ->
             application.log.error("Notes read failed: ${error.localizedMessage}")
 
             when (error) {
                 is IllegalAccessException ->
-                    call.respond(HttpStatusCode.Unauthorized, error.localizedMessage)
+                    call.respond(HttpStatusCode.Unauthorized, ApiResponse.Error(error.localizedMessage))
                 else ->
-                    call.respond(HttpStatusCode.InternalServerError, "Unknown error")
+                    call.respond(HttpStatusCode.InternalServerError, ApiResponse.Error("Unknown error"))
             }
         })
     }

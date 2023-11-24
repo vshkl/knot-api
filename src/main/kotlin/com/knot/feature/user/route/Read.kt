@@ -2,6 +2,7 @@ package com.knot.feature.user.route
 
 import arrow.core.raise.ensureNotNull
 import arrow.core.raise.result
+import com.knot.common.dto.ApiResponse
 import com.knot.feature.user.User
 import com.knot.feature.user.UserResource
 import com.knot.feature.user.dto.asUserDto
@@ -24,15 +25,15 @@ fun Route.readUser() {
 
             return@result user.asUserDto()
         }.fold({ user ->
-            call.respond(user)
+            call.respond(ApiResponse.Success(user))
         }, { error ->
             application.log.error("User read failed: ${error.localizedMessage}")
 
             when (error) {
                 is IllegalAccessException ->
-                    call.respond(HttpStatusCode.Unauthorized, error.localizedMessage)
+                    call.respond(HttpStatusCode.Unauthorized, ApiResponse.Error(error.localizedMessage))
                 else ->
-                    call.respond(HttpStatusCode.InternalServerError, "Unknown error")
+                    call.respond(HttpStatusCode.InternalServerError, ApiResponse.Error("Unknown error"))
             }
         })
     }

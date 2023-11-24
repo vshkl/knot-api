@@ -3,6 +3,7 @@ package com.knot.feature.note.route
 import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
 import arrow.core.raise.result
+import com.knot.common.dto.ApiResponse
 import com.knot.feature.note.NoteResource
 import com.knot.feature.note.NotesRepository
 import com.knot.feature.user.User
@@ -39,11 +40,11 @@ fun Route.deleteNote(notesRepository: NotesRepository) {
 
             when (error) {
                 is IllegalAccessException ->
-                    call.respond(HttpStatusCode.Unauthorized, error.localizedMessage)
+                    call.respond(HttpStatusCode.Unauthorized, ApiResponse.Error(error.localizedMessage))
                 is NoSuchElementException ->
-                    call.respond(HttpStatusCode.BadRequest, error.localizedMessage)
+                    call.respond(HttpStatusCode.BadRequest, ApiResponse.Error(error.localizedMessage))
                 else ->
-                    call.respond(HttpStatusCode.InternalServerError, "Unknown error")
+                    call.respond(HttpStatusCode.InternalServerError, ApiResponse.Error("Unknown error"))
             }
         })
     }
