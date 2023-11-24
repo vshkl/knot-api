@@ -29,7 +29,7 @@ fun Route.signIn(
                 ?.takeIf { hashFunction(request.password) == it.passwordHash }
 
             ensureNotNull(user) {
-                NoSuchElementException("User not found")
+                NoSuchElementException("Wrong email or password")
             }
 
             return@result TokensDto(
@@ -45,7 +45,7 @@ fun Route.signIn(
                 is BadRequestException ->
                     call.respond(HttpStatusCode.BadRequest, "Malformed request")
                 is NoSuchElementException ->
-                    call.respond(HttpStatusCode.Unauthorized, "Wrong email or password")
+                    call.respond(HttpStatusCode.Unauthorized, error.localizedMessage)
                 else ->
                     call.respond(HttpStatusCode.InternalServerError, "Unknown error")
             }

@@ -1,17 +1,18 @@
 package com.knot.feature.auth.route
 
+import arrow.core.raise.ensureNotNull
+import arrow.core.raise.result
 import com.knot.feature.auth.AuthResource
 import com.knot.feature.auth.JwtService
 import com.knot.feature.auth.TokenType
 import com.knot.feature.auth.dto.RefreshTokenDto
 import com.knot.feature.auth.dto.TokensDto
-import com.knot.feature.user.User
 import com.knot.feature.user.UsersRepository
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.application
 import io.ktor.server.application.call
 import io.ktor.server.application.log
-import io.ktor.server.request.ContentTransformationException
+import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.request.receive
 import io.ktor.server.resources.post
 import io.ktor.server.response.respond
@@ -22,42 +23,37 @@ fun Route.refreshToken(
     jwtService: JwtService,
 ) {
     post<AuthResource.RefreshToken> {
-        lateinit var refreshTokenDto: RefreshTokenDto
+        result {
+            val request = call.receive<RefreshTokenDto>()
+            val tokenType = jwtService.identifyToken(request.refreshToken)
+                .takeIf { it == TokenType.REFRESH }
+            val user = jwtService.identifyUser(request.refreshToken)
+                .let { userId -> usersRepository.findUser(userId) }
 
-        try {
-            refreshTokenDto = call.receive()
-        } catch (e: ContentTransformationException) {
-            application.log.error("Failed to process request", e)
-            call.respond(HttpStatusCode.BadRequest, "Incomplete data")
-        }
-
-        try {
-            val tokenType = jwtService.identifyToken(refreshTokenDto.refreshToken)
-            when (tokenType) {
-                TokenType.ACCESS -> {
-                    application.log.error("Wrong token type")
-                    call.respond(HttpStatusCode.Unauthorized)
-                }
-
-                TokenType.REFRESH -> {
-                    val userId = jwtService.identifyUser(refreshTokenDto.refreshToken)
-                    val user: User? = usersRepository.findUser(userId)
-
-                    if (user != null) {
-                        val tokensDto = TokensDto(
-                            accessToken = jwtService.generateAccessToken(user),
-                            refreshToken = jwtService.generateRefreshToken(user),
-                        )
-                        call.respond(tokensDto)
-                    } else {
-                        application.log.error("Failed to refresh token")
-                        call.respond(HttpStatusCode.Unauthorized)
-                    }
-                }
+            ensureNotNull(tokenType) {
+                IllegalArgumentException("Wrong token")
             }
-        } catch (e: Throwable) {
-            application.log.error("Failed to refresh token", e)
-            call.respond(HttpStatusCode.BadRequest, "Failed to refresh token")
-        }
+            ensureNotNull(user) {
+                IllegalArgumentException("Wrong token or token expired")
+            }
+
+            return@result TokensDto(
+                accessToken = jwtService.generateAccessToken(user),
+                refreshToken = jwtService.generateRefreshToken(user),
+            )
+        }.fold({ tokens ->
+            call.respond(tokens)
+        }, { error ->
+            application.log.error("Token refresh failed: ${error.localizedMessage}")
+
+            when (error) {
+                is BadRequestException ->
+                    call.respond(HttpStatusCode.BadRequest, "Malformed request")
+                is IllegalArgumentException ->
+                    call.respond(HttpStatusCode.Unauthorized, error.localizedMessage)
+                else ->
+                    call.respond(HttpStatusCode.InternalServerError, "Unknown error")
+            }
+        })
     }
 }
