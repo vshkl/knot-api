@@ -9,6 +9,9 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
 
+private const val ACCESS_TOKEN_EXPIRATION_DAYS = 5L
+private const val REFRESH_TOKEN_EXPIRATION_DAYS = 30L
+
 class JwtService {
 
     private val dotenv by lazy { dotenv() }
@@ -82,8 +85,8 @@ class JwtService {
 
     private fun expiresAt(tokenType: TokenType): Date =
         when (tokenType) {
-            TokenType.ACCESS -> 5L
-            TokenType.REFRESH -> 30L
+            TokenType.ACCESS -> ACCESS_TOKEN_EXPIRATION_DAYS
+            TokenType.REFRESH -> REFRESH_TOKEN_EXPIRATION_DAYS
         }.let { expiresIn ->
             LocalDateTime.now()
                 .plusDays(expiresIn)
@@ -91,5 +94,4 @@ class JwtService {
                 .toInstant()
                 .let(Date::from)
         }
-
 }

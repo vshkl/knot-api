@@ -11,6 +11,8 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
+private const val POOL_SIZE = 3
+
 /**
  * A factory for managing the database connection and executing database queries.
  */
@@ -48,7 +50,7 @@ object DatabaseFactory {
         val config = HikariConfig().apply {
             driverClassName = dotenv["JDBC_DRIVER_CLASS"]
             jdbcUrl = dotenv["JDBC_DATABASE_URL"]
-            maximumPoolSize = 3
+            maximumPoolSize = POOL_SIZE
             isAutoCommit = false
             transactionIsolation = "TRANSACTION_REPEATABLE_READ"
             dotenv["DB_USER"]?.run {

@@ -6,6 +6,10 @@ import com.knot.feature.user.UserEntity.id
 import com.knot.feature.user.UserEntity.passwordHash
 import org.jetbrains.exposed.dao.id.LongIdTable
 
+private const val EMAIL_LENGTH = 128
+private const val DISPLAY_NAME_LENGTH = 256
+private const val PASSWORD_LENGTH = 64
+
 /**
  * The Users class represents a database table for users of the system.
  *
@@ -16,10 +20,10 @@ import org.jetbrains.exposed.dao.id.LongIdTable
  */
 @Suppress("MemberVisibilityCanBePrivate")
 object UserEntity : LongIdTable() {
-    val email = varchar("email", 128)
+    val email = varchar("email", EMAIL_LENGTH)
         .uniqueIndex()
-    val displayName = varchar("display_name", 256)
-    val passwordHash = varchar("password_hash", 64)
+    val displayName = varchar("display_name", DISPLAY_NAME_LENGTH)
+    val passwordHash = varchar("password_hash", PASSWORD_LENGTH)
 
     override val tableName: String
         get() = "Users"

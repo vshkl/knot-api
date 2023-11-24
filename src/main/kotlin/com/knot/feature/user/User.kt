@@ -17,7 +17,13 @@ data class User(
     val email: String,
     val displayName: String,
     val passwordHash: String,
-) : Serializable, Principal
+) : Serializable, Principal {
+
+    companion object {
+        @Suppress("ConstPropertyName")
+        private const val serialVersionUID = 1L
+    }
+}
 
 /**
  * Converts a database [ResultRow] object to a [User] object.

@@ -20,4 +20,3 @@ fun User.asUserDto() =
         email = email,
         displayName = displayName,
     )
-

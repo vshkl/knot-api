@@ -7,6 +7,9 @@ import com.knot.feature.user.UserEntity
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.ReferenceOption
 
+private const val TITLE_LENGTH = 80
+private const val CONTENT_LENGTH = 1000
+
 /**
  * The Note class represents a database table for storing notes.
  *
@@ -18,8 +21,8 @@ import org.jetbrains.exposed.sql.ReferenceOption
 object NoteEntity : LongIdTable() {
     val userId = long("user_id")
         .references(UserEntity.id, onDelete = ReferenceOption.CASCADE)
-    val title = varchar("title", 80)
-    val content = varchar("content", 1000)
+    val title = varchar("title", TITLE_LENGTH)
+    val content = varchar("content", CONTENT_LENGTH)
 
     override val tableName: String
         get() = "Notes"

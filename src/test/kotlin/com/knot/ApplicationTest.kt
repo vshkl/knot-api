@@ -1,4 +1,3 @@
 package com.knot
 
-class ApplicationTest {
-}
+class ApplicationTest

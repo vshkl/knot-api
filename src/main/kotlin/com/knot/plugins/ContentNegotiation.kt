@@ -8,8 +8,10 @@ import kotlinx.serialization.json.Json
 
 fun Application.configureContentNegotiation() {
     install(ContentNegotiation) {
-        json(Json {
-            prettyPrint = true
-        })
+        json(
+            Json {
+                prettyPrint = true
+            }
+        )
     }
 }
