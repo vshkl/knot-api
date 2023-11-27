@@ -11,8 +11,8 @@ import io.ktor.server.routing.routing
 context(JwtContext, RepositoriesContext)
 fun Application.configureRouting() {
     routing {
-        authRoutes(usersRepository, jwtService, passwordHasher)
+        authRoutes()
         userRoutes()
-        noteRoutes(notesRepository)
+        noteRoutes()
     }
 }
