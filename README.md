@@ -5,7 +5,7 @@ A playground for learning backend development using Kotlin and Ktor.
 ## What's here
 
 - Sign-up & Sign-in with email and password.
-- Authentication with JWT token.
+- Authentication with JWT token and token refresh.
 - Basic CRUD operations for notes.
 - Cursor-based pagination for notes.
 
