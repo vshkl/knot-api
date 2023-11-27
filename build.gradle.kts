@@ -25,6 +25,14 @@ application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
+tasks {
+    compileKotlin {
+        kotlinOptions {
+            freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
+        }
+    }
+}
+
 detekt {
     toolVersion = detektVersion
     config.setFrom(file("config/detekt/detekt.yml"))
