@@ -9,11 +9,11 @@ class PasswordHasherImpl(
 ) : PasswordHasher {
 
     private val key by lazy { SecretKeySpec(hex(secretKet), ALGORITHM) }
-
     private val mac by lazy {
         Mac.getInstance(ALGORITHM)
             .apply { init(key) }
     }
+
     override fun hash(password: String): String {
         return mac
             .doFinal(password.toByteArray(Charsets.UTF_8))

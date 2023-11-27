@@ -12,67 +12,34 @@ import java.util.*
 private const val ACCESS_TOKEN_EXPIRATION_DAYS = 5L
 private const val REFRESH_TOKEN_EXPIRATION_DAYS = 30L
 
-class JwtService {
+class JwtServiceImpl(
+    jwtSecret: String,
+) : JwtService {
 
     private val dotenv by lazy { dotenv() }
 
     private val issuer = "knotServer"
-    private val jwtSecret = dotenv["JWT_SECRET"]
     private val algorithm = Algorithm.HMAC512(jwtSecret)
 
-    /**
-     * A JWT verifier for verifying the authenticity of JSON Web Tokens.
-     *
-     * @property verifier The JWTVerifier instance responsible for verifying JWTs.
-     *
-     * @throws IllegalAccessException
-     */
-    val verifier: JWTVerifier = JWT
+    override val verifier: JWTVerifier = JWT
         .require(algorithm)
         .withIssuer(issuer)
         .build()
 
-    /**
-     * Identifies the type of the given token represented by [TokenType].
-     *
-     * @param token The token to be identified.
-     * @return The [TokenType] of the given token.
-     *
-     * @throws IllegalAccessException
-     * @throws com.auth0.jwt.exceptions.JWTVerificationException
-     */
-    fun identifyToken(token: String): TokenType {
+    override fun identifyToken(token: String): TokenType {
         return verifier.verify(token)
             .getClaim("type")
             .asString()
             .let(TokenType::valueOf)
     }
 
-    /**
-     * Identifies the user based on the provided token.
-     *
-     * @param token The token used to authenticate the user.
-     * @return The ID of the user.
-     *
-     * @throws IllegalAccessException
-     * @throws com.auth0.jwt.exceptions.JWTVerificationException
-     */
-    fun identifyUser(token: String): Long {
+    override fun identifyUser(token: String): Long {
         return verifier.verify(token)
             .getClaim("id")
             .asLong()
     }
 
-    /**
-     * Generates an access token for the given user.
-     *
-     * @param user The user for whom the token is generated.
-     * @return The generated token as a string.
-     *
-     * @throws IllegalAccessException
-     * @throws com.auth0.jwt.exceptions.JWTCreationException
-     */
-    fun generateAccessToken(user: User): String = JWT.create()
+    override fun generateAccessToken(user: User): String = JWT.create()
         .withSubject("Authentication")
         .withIssuer(issuer)
         .withClaim("id", user.id)
@@ -80,16 +47,7 @@ class JwtService {
         .withExpiresAt(expiresAt(TokenType.ACCESS))
         .sign(algorithm)
 
-    /**
-     * Generates a refresh token for the given user.
-     *
-     * @param user The user for whom the token is generated.
-     * @return The generated token as a string.
-     *
-     * @throws IllegalAccessException
-     * @throws com.auth0.jwt.exceptions.JWTCreationException
-     */
-    fun generateRefreshToken(user: User): String = JWT.create()
+    override fun generateRefreshToken(user: User): String = JWT.create()
         .withSubject("Authentication")
         .withIssuer(issuer)
         .withClaim("id", user.id)
@@ -108,4 +66,61 @@ class JwtService {
                 .toInstant()
                 .let(Date::from)
         }
+}
+
+/**
+ * Interface representing a JWT Service.
+ * Provides methods for JWT generation, verification, and user identification.
+ */
+interface JwtService {
+
+    /**
+     * A JWT verifier for verifying the authenticity of JSON Web Tokens.
+     *
+     * @property verifier The JWTVerifier instance responsible for verifying JWTs.
+     * @throws IllegalAccessException
+     */
+    val verifier: JWTVerifier
+
+    /**
+     * Identifies the type of the given token represented by [TokenType].
+     *
+     * @param token The token to be identified.
+     * @return The [TokenType] of the given token.
+     * @throws IllegalAccessException
+     * @throws com.auth0.jwt.exceptions.JWTVerificationException
+     */
+    fun identifyToken(token: String): TokenType
+
+    /**
+     * Identifies the user based on the provided token.
+     *
+     * @param token The token used to authenticate the user.
+     * @return The ID of the user.
+     *
+     * @throws IllegalAccessException
+     * @throws com.auth0.jwt.exceptions.JWTVerificationException
+     */
+    fun identifyUser(token: String): Long
+
+    /**
+     * Generates an access token for the given user.
+     *
+     * @param user The user for whom the token is generated.
+     * @return The generated token as a string.
+     * @throws IllegalAccessException
+     * @throws com.auth0.jwt.exceptions.JWTCreationException
+     */
+    fun generateAccessToken(user: User): String
+
+    /**
+     * Generates a refresh token for the given user.
+     *
+     * @param user The user for whom the token is generated.
+     * @return The generated token as a string.
+     *
+     * @throws IllegalAccessException
+     * @throws com.auth0.jwt.exceptions.JWTCreationException
+     */
+    fun generateRefreshToken(user: User): String
 }

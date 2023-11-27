@@ -1,6 +1,7 @@
 package com.knot.di
 
 import com.knot.feature.auth.JwtService
+import com.knot.feature.auth.JwtServiceImpl
 import com.knot.feature.auth.PasswordHasher
 import com.knot.feature.auth.PasswordHasherImpl
 import io.github.cdimascio.dotenv.dotenv
@@ -19,7 +20,9 @@ data class JwtContext(
     companion object {
 
         fun standard() = JwtContext(
-            jwtService = JwtService(),
+            jwtService = JwtServiceImpl(
+                jwtSecret = dotenv["JWT_SECRET"],
+            ),
             passwordHasher = PasswordHasherImpl(
                 secretKet = dotenv["SECRET_KEY"],
             ),
