@@ -9,9 +9,9 @@ import io.ktor.server.routing.Route
 fun Route.authRoutes(
     usersRepository: UsersRepository,
     jwtService: JwtService,
-    hashFunction: (String) -> String,
+    passwordHasher: PasswordHasher,
 ) {
-    signUp(usersRepository, jwtService, hashFunction)
-    signIn(usersRepository, jwtService, hashFunction)
+    signUp(usersRepository, jwtService, passwordHasher)
+    signIn(usersRepository, jwtService, passwordHasher)
     refreshToken(usersRepository, jwtService)
 }

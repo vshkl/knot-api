@@ -5,6 +5,7 @@ import arrow.core.raise.result
 import com.knot.common.dto.ApiResponse
 import com.knot.feature.auth.AuthResource
 import com.knot.feature.auth.JwtService
+import com.knot.feature.auth.PasswordHasher
 import com.knot.feature.auth.dto.SignUpDto
 import com.knot.feature.auth.dto.TokensDto
 import com.knot.feature.user.UsersRepository
@@ -22,7 +23,7 @@ import io.ktor.server.routing.Route
 fun Route.signUp(
     usersRepository: UsersRepository,
     jwtService: JwtService,
-    hashFunction: (String) -> String,
+    passwordHasher: PasswordHasher,
 ) {
     post<AuthResource.SignUp> {
         result {
@@ -31,7 +32,7 @@ fun Route.signUp(
             val user = usersRepository.createUser(
                 email = request.email,
                 displayName = request.displayName,
-                passwordHash = hashFunction(request.password),
+                passwordHash = passwordHasher.hash(request.password),
             ).run {
                 ensureNotNull(this) {
                     NoSuchElementException("User not created")

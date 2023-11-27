@@ -1,10 +1,8 @@
 package com.knot
 
 import com.knot.database.DatabaseFactory
-import com.knot.feature.auth.JwtService
-import com.knot.feature.auth.PasswordHasher
-import com.knot.feature.note.NotesRepositoryImpl
-import com.knot.feature.user.UsersRepositoryImpl
+import com.knot.di.JwtContext
+import com.knot.di.RepositoriesContext
 import com.knot.plugins.configureAuthentication
 import com.knot.plugins.configureContentNegotiation
 import com.knot.plugins.configureRequestValidation
@@ -20,22 +18,14 @@ fun main() {
 }
 
 fun Application.module() {
-    val usersRepository = UsersRepositoryImpl()
-    val notesRepository = NotesRepositoryImpl()
-    val jwtService = JwtService()
-
-    DatabaseFactory.init()
-    configureContentNegotiation()
-    configureRequestValidation()
-    configureAuthentication(
-        usersRepository = usersRepository,
-        jwtService = jwtService,
-    )
-    configureResources()
-    configureRouting(
-        usersRepository = usersRepository,
-        notesRepository = notesRepository,
-        jwtService = jwtService,
-        hashFunction = PasswordHasher::hash,
-    )
+    with(JwtContext.standard()) {
+        with(RepositoriesContext.standard()) {
+            DatabaseFactory.init()
+            configureContentNegotiation()
+            configureRequestValidation()
+            configureAuthentication()
+            configureResources()
+            configureRouting()
+        }
+    }
 }

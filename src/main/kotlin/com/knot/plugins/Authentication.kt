@@ -1,7 +1,7 @@
 package com.knot.plugins
 
-import com.knot.feature.auth.JwtService
-import com.knot.feature.user.UsersRepository
+import com.knot.di.JwtContext
+import com.knot.di.RepositoriesContext
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
@@ -10,10 +10,8 @@ import io.ktor.server.auth.jwt.jwt
 const val JWT_NAME = "jwt"
 private const val JWT_REALM = "knot-server"
 
-fun Application.configureAuthentication(
-    usersRepository: UsersRepository,
-    jwtService: JwtService,
-) {
+context(JwtContext, RepositoriesContext)
+fun Application.configureAuthentication() {
     install(Authentication) {
         jwt(JWT_NAME) {
             verifier(jwtService.verifier)
